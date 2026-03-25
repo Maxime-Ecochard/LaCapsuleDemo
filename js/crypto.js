@@ -39,7 +39,7 @@ export async function encryptData(buffer, pin) {
     return {
         salt: bufToB64(salt),
         iv: bufToB64(iv),
-        data: bufToB64(ciphertext)
+        data: ciphertext // Store ArrayBuffer directly
     };
 }
 
@@ -47,7 +47,9 @@ export async function encryptData(buffer, pin) {
 export async function decryptData(encrypted, pin) {
     const salt = b64ToBuf(encrypted.salt);
     const iv = b64ToBuf(encrypted.iv);
-    const data = b64ToBuf(encrypted.data);
+    // Legacy support for older capsules that were base64 encoded
+    const data = typeof encrypted.data === 'string' ? b64ToBuf(encrypted.data) : encrypted.data;
+    
     const key = await deriveKey(pin, salt);
 
     return crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
@@ -66,7 +68,13 @@ export async function verifyPin(encrypted, pin) {
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 function bufToB64(buffer) {
-    return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+    }
+    return btoa(binary);
 }
 
 function b64ToBuf(b64) {
