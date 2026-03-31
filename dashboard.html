@@ -5,52 +5,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#2d7a4f" />
-    <title>Mon Tableau de Bord — Capsule Vidéo (Démo)</title>
+    <title>Mon Tableau de Bord — Capsule Vidéo</title>
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icons/LogoBleu.png" />
     <link rel="stylesheet" href="css/style.css" />
     <style>
-        .demo-ribbon {
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            color: white;
-            text-align: center;
-            padding: 6px 16px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .demo-ribbon a {
-            color: white;
-            text-decoration: underline;
-            margin-left: 8px;
-            opacity: 0.85;
-        }
-
-        .capsule-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 99px;
-            padding: 4px 14px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .capsule-status-badge .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #6dff9e;
-            animation: blink 2s ease-in-out infinite;
-        }
-
-        /* Tabs System - Copied from main dashboard */
+        /* Tabs System */
         .tabs-header {
             display: flex;
             gap: 4px;
@@ -96,12 +56,6 @@
 </head>
 
 <body>
-    <!-- Bandeau démo -->
-    <div class="demo-ribbon">
-        🎬 Mode démonstration
-        <a href="index.html">← Retour à l'application réelle</a>
-    </div>
-
     <div class="app-shell">
 
         <!-- Header -->
@@ -126,24 +80,17 @@
         <!-- Page Content -->
         <main class="page" id="mainPage">
 
-            <!-- Hero -->
+            <!-- Hero / Record CTA -->
             <div class="dashboard-hero">
-                <p style="font-size:0.95rem;opacity:0.8;margin-bottom:4px;">Bonjour,</p>
-                <p class="hero-name" id="heroName">Émilie</p>
-
-                <!-- Badge capsule active -->
-                <div class="capsule-status-badge">
-                    <span class="dot"></span>
-                    Capsule active
-                </div>
-
+                <p class="dashboard-hero h2" style="font-size:0.95rem;opacity:0.8;margin-bottom:4px;">Bonjour,</p>
+                <p class="hero-name" id="heroName">…</p>
                 <button class="record-btn-hero" id="recordBtn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                         viewBox="0 0 16 16">
                         <path
                             d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5z" />
                     </svg>
-                    Enregistrer une nouvelle Capsule
+                    Enregistrer ma Capsule
                 </button>
                 <a href="tutoriel.html" class="btn btn-secondary btn-sm" style="display:inline-flex; background: rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); margin-top:12px;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -157,53 +104,56 @@
             <!-- Current Capsules -->
             <p class="section-title">Mes Capsules</p>
             <div class="card" id="capsuleCard">
-                <div id="tabsHeader" class="tabs-header">
-                    <button class="tab-btn active" data-tab="active">Ma capsule actuelle</button>
-                    <button class="tab-btn" data-tab="previous">Capsule précédente</button>
+                <div id="tabsHeader" class="tabs-header" style="display:none;">
+                    <button class="tab-btn active" data-tab="0">Ma capsule actuelle</button>
+                    <button class="tab-btn" data-tab="1" id="prevTabBtn" style="display:none;">Capsule précédente</button>
                 </div>
 
-                <div id="playerGroup">
+                <div class="video-empty" id="emptyState">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2V5z" />
+                    </svg>
+                    <p>Aucune capsule enregistrée.<br>Appuyez sur le bouton ci-dessus pour commencer.</p>
+                </div>
+                
+                <div id="playerGroup" style="display:none;">
                     <div class="video-container">
-                        <video id="capsulePlayer" src="DAP Emilie 10:01:2026.mp4" controls playsinline
-                            preload="metadata">
-                        </video>
+                        <video id="capsulePlayer" controls playsinline></video>
                     </div>
-                    <div class="capsule-meta mt-8" id="capsuleMeta">
-                        <span class="meta-chip" id="dateChip">📅 10 février 2026</span>
-                        <span class="meta-chip" id="durationChip">⏱ …</span>
-                        <span class="meta-chip" id="versionChip">✨ Actuelle</span>
-                    </div>
+                    <div class="capsule-meta mt-8" id="capsuleMeta"></div>
                     <div class="divider"></div>
-                    <div class="info-box" style="margin-bottom:12px;">
-                        ℹ️ En mode démo, la vidéo est chargée directement — dans la version réelle, elle est chiffrée
-                        avec votre PIN et ne quitte jamais votre appareil.
-                    </div>
-                    <button class="btn btn-danger btn-sm" id="deleteBtn" style="width:100%;" disabled title="Indisponible en demo">
+                    <button class="btn btn-danger btn-sm" id="deleteBtn" style="width:100%;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path
-                                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V5zm2.5 0a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V5z" />
+                                d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0-1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V5zm2.5 0a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0V5z" />
                         </svg>
                         Supprimer cette version
                     </button>
                 </div>
             </div>
 
-            <!-- Info DAP -->
+            <!-- Info -->
+            <div class="info-box">
+                🔒 Votre vidéo est chiffrée avec votre PIN. Elle ne quitte jamais cet appareil.
+            </div>
+
             <p class="section-title">Informations</p>
             <div class="card-muted" style="font-size:0.85rem;color:var(--gray-600);line-height:1.6;">
                 Les <strong>Directives Anticipées en Psychiatrie</strong> (DAP) vous permettent d'exprimer vos souhaits
                 concernant vos soins en cas de crise, quand vous n'êtes plus en mesure de le faire vous-même.
                 <div class="divider"></div>
-                <span style="color:var(--green-dark);font-weight:600;">Durée recommandée :</span> 2 à 5 minutes.<br>
-                <span style="color:var(--green-dark);font-weight:600;">Phases :</span> Identification · Pathologie ·
+                <span style="color:var(--green-dark);font-weight:600;">Durée recommandée&nbsp;:</span> 2 à 5 minutes.<br>
+                <span style="color:var(--green-dark);font-weight:600;">Phases&nbsp;:</span> Identification · Pathologie ·
                 Directives · Message d'espoir.
 
                 <div class="divider"></div>
-                <strong style="color:var(--primary-color);">Étape préalable : Vos DAP à l'écrit</strong><br>
+                <strong style="color:var(--primary-color);">Étape préalable&nbsp;: Vos DAP à l'écrit</strong><br>
                 Avant d'enregistrer votre capsule vidéo, il est recommandé de rédiger vos DAP. Vous pouvez utiliser le <a href="https://www.psycom.org/agir/la-defense-des-droits/kit-mon-gps/#telecharger-le-livret-mon-gps-697d5fd9e384f" target="_blank" rel="noopener" style="color:var(--primary-color);font-weight:600;text-decoration:underline;">Kit Mon GPS (Psycom)</a>.
                 
-                <p style="margin-top: 8px; margin-bottom: 4px; font-weight: 600;">Livrets interactifs remplissables :</p>
+                <p style="margin-top: 8px; margin-bottom: 4px; font-weight: 600;">Livrets interactifs remplissables&nbsp;:</p>
                 <ul style="margin: 0; padding-left: 20px;">
                     <li><strong>Adultes :</strong> <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_GPS_VF_INTERACTIF_2023.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Livret</a> | <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_PRISM_monGPS_NOTICE_Usagers.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Notice</a></li>
                     <li><strong>Ados/Jeunes :</strong> <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_GPS_ADOS_INTERACTIF_2023.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Livret</a> | <a href="https://www.psycom.org/wp-content/uploads/2024/04/PSYCOM_GPS_ADO-JEUNES-ADULTES_Notice_Jeunes_DEF.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Notice</a></li>
@@ -220,12 +170,11 @@
                     Historique des actions
                 </a>
             </div>
-
         </main>
 
         <!-- Bottom Nav -->
         <nav class="bottom-nav">
-            <a class="nav-item active" href="dashboard-demo.html">
+            <a class="nav-item active" href="dashboard.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
                     <path
                         d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146z" />
@@ -260,54 +209,131 @@
     </div>
     <div id="toast" class="toast"></div>
 
-    <script>
-        // Fake previous version meta
-        const VERSIONS = {
-            active: { date: '10 février 2026', title: '✨ Actuelle' },
-            previous: { date: '08 janvier 2026', title: '📂 Archivée' }
-        };
+    <script type="module">
+        import { getState, requireAuth, clearState, getCapsules, deleteCapsule, showToast, addHistoryEntry } from './js/app.js';
+        import { decryptData } from './js/crypto.js';
 
+        if (!requireAuth()) throw new Error('Not authenticated');
+
+        const state = getState();
+        document.getElementById('heroName').textContent = state.name;
+
+        let userCapsules = [];
+        let currentIdx = 0;
+
+        const emptyState = document.getElementById('emptyState');
+        const playerGroup = document.getElementById('playerGroup');
+        const tabsHeader = document.getElementById('tabsHeader');
+        const prevTabBtn = document.getElementById('prevTabBtn');
         const player = document.getElementById('capsulePlayer');
-        const durationChip = document.getElementById('durationChip');
-        const dateChip = document.getElementById('dateChip');
-        const versionChip = document.getElementById('versionChip');
+        const meta = document.getElementById('capsuleMeta');
 
-        // Reading duration
-        player.addEventListener('loadedmetadata', () => {
-            const sec = Math.round(player.duration);
-            const m = String(Math.floor(sec / 60)).padStart(2, '0');
-            const s = String(sec % 60).padStart(2, '0');
-            durationChip.textContent = `⏱ ${m}:${s}`;
-        });
+        // Load existing capsules
+        async function loadCapsules() {
+            userCapsules = await getCapsules(state.name);
+            
+            if (userCapsules.length === 0) {
+                emptyState.style.display = 'flex';
+                playerGroup.style.display = 'none';
+                tabsHeader.style.display = 'none';
+                return;
+            }
 
-        // Tabs logic in Demo
+            emptyState.style.display = 'none';
+            playerGroup.style.display = 'block';
+            
+            if (userCapsules.length > 1) {
+                tabsHeader.style.display = 'flex';
+                prevTabBtn.style.display = 'block';
+            } else {
+                tabsHeader.style.display = 'none';
+            }
+
+            renderVersion(0);
+        }
+
+        async function renderVersion(idx) {
+            currentIdx = idx;
+            const record = userCapsules[idx];
+            if (!record) return;
+
+            // Mettre à jour les onglets
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === idx);
+            });
+
+            player.src = '';
+            meta.innerHTML = '<span class="meta-chip">Définition en cours...</span>';
+
+            try {
+                const decrypted = await decryptData(record.encryptedVideo, state.pin);
+                const blob = new Blob([decrypted], { type: record.mimeType || 'video/webm' });
+                player.src = URL.createObjectURL(blob);
+
+                const date = new Date(record.recordedAt).toLocaleDateString('fr-FR', {
+                    day: '2-digit', month: 'long', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+                const dur = formatTime(record.duration || 0);
+                meta.innerHTML = `
+                    <span class="meta-chip">📅 ${date}</span>
+                    <span class="meta-chip">⏱ ${dur}</span>
+                    <span class="meta-chip">${idx === 0 ? '✨ Actuelle' : '📂 Archivée'}</span>
+                `;
+            } catch (err) {
+                console.error(err);
+                showToast('⚠️ PIN incorrect — impossible de déchiffrer la capsule.');
+            }
+        }
+
+        loadCapsules();
+
+        // Tabs switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const type = btn.dataset.tab;
-                
-                // Toggle active state
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
-                
-                // Change meta
-                dateChip.textContent = `📅 ${VERSIONS[type].date}`;
-                versionChip.textContent = VERSIONS[type].title;
-                
-                // Simulate loading another video (same file but reset)
-                player.currentTime = 0;
-                player.play().catch(() => {});
+                const idx = parseInt(btn.dataset.tab);
+                if (idx !== currentIdx) renderVersion(idx);
             });
         });
 
-        // Déconnexion → retour à la page démo
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            sessionStorage.removeItem('capsule_user');
-            window.location.href = 'index-demo.html';
-        });
-
-        // Bouton enregistrer → page d'enregistrement
         document.getElementById('recordBtn').addEventListener('click', () => {
             window.location.href = 'record.html';
         });
+
+        document.getElementById('deleteBtn')?.addEventListener('click', async () => {
+            const currentRecord = userCapsules[currentIdx];
+            if (!currentRecord) return;
+
+            const label = currentIdx === 0 ? 'votre capsule ACTUELLE' : 'votre capsule PRÉCÉDENTE';
+            if (confirm(`Supprimer définitivement ${label} ? Cette action est irréversible.`)) {
+                await deleteCapsule(currentRecord.internalId);
+
+                // Log dans l'historique
+                try {
+                    await addHistoryEntry({
+                        type: 'delete',
+                        details: { 
+                            version: currentIdx === 0 ? 'actuelle' : 'précédente',
+                            capsuleNumber: currentRecord.capsuleNumber 
+                        }
+                    });
+                } catch (e) { console.warn('History log error:', e); }
+
+                showToast('Capsule supprimée.');
+                setTimeout(() => location.reload(), 1500);
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            clearState();
+            window.location.href = 'index.html';
+        });
+
+        function formatTime(sec) {
+            const m = String(Math.floor(sec / 60)).padStart(2, '0');
+            const s = String(sec % 60).padStart(2, '0');
+            return `${m}:${s}`;
+        }
     </script>
 </body>
 
