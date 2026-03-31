@@ -197,7 +197,11 @@
 
     <script>
         document.getElementById('backBtn').addEventListener('click', () => {
-            window.location.href = 'about.html';
+            if (document.referrer && document.referrer.includes('about.html')) {
+                window.history.back();
+            } else {
+                window.location.href = 'about.html';
+            }
         });
     </script>
 </body>

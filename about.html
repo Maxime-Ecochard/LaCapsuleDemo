@@ -183,10 +183,14 @@
 
     <script>
         document.getElementById('backBtn').addEventListener('click', () => {
-            if (document.referrer) {
+            const state = JSON.parse(sessionStorage.getItem('capsule_user')) || {};
+            const isLogged = state.name && state.pin;
+            const homePage = isLogged ? 'dashboard.html' : 'index.html';
+
+            if (document.referrer && !document.referrer.includes('changelog.html') && !document.referrer.includes('about.html')) {
                 window.history.back();
             } else {
-                window.location.href = 'index.html';
+                window.location.href = homePage;
             }
         });
 
