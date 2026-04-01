@@ -2,161 +2,207 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#1e4a7a" />
-    <title>Capsule Vidéo — Démo</title>
-    <link rel="manifest" href="manifest.json" />
-    <link rel="apple-touch-icon" href="icons/LogoBleu.png" />
-    <link rel="icon" href="icons/LogoBleu.png" type="image/png" />
-    <link rel="stylesheet" href="css/style.css" />
-    <style>
-        .demo-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            color: white;
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 4px 14px;
-            border-radius: 99px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            animation: fadeInUp 0.6s 0.1s ease-out both;
-            box-shadow: 0 3px 12px rgba(255, 107, 53, 0.35);
-        }
-
-        .demo-info {
-            background: linear-gradient(135deg, #fff8e1, #fff3cd);
-            border: 1px solid #ffc107;
-            border-radius: 12px;
-            padding: 14px 16px;
-            font-size: 0.82rem;
-            color: #856404;
-            text-align: left;
-            line-height: 1.6;
-            width: 100%;
-            margin-bottom: 24px;
-            animation: fadeInUp 0.6s 0.4s ease-out both;
-        }
-
-        .demo-info strong {
-            color: #6d4c00;
-        }
-
-        .demo-creds {
-            font-family: 'Courier New', monospace;
-            background: rgba(0, 0, 0, 0.06);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.84rem;
-        }
-
-        .pin-prefilled {
-            background: linear-gradient(135deg, #e3f2fd, #d1e9f9) !important;
-            border-color: var(--blue-mid) !important;
-            color: var(--blue-dark) !important;
-            font-size: 1.4rem !important;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e4a7a" />
+  <meta name="description" content="Enregistrez vos Directives Anticipées en Psychiatrie en toute sécurité." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Ma Capsule" />
+  <title>Capsule Vidéo — Connexion</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/LogoBleuFondBlanc.png" />
+  <link rel="icon" href="icons/LogoBleuFondBlanc.png" type="image/png" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
-    <div class="login-page">
+  <div class="login-page">
 
-        <!-- Logo -->
-        <img src="icons/LogoBleu.png" alt="Logo Capsule Vidéo" class="login-logo" />
+    <!-- Logo -->
+    <img src="icons/LogoBleu.png" alt="Logo Capsule Vidéo" class="login-logo" />
 
-        <!-- Badge démo -->
-        <span class="demo-badge">🎬 Mode démonstration</span>
+    <h1>Capsule Vidéo<br>pour le Rétablissement</h1>
+    <p class="tagline">Vos directives anticipées en psychiatrie,<br>sécurisées et accessibles.</p>
 
-        <h1>Capsule Vidéo<br>pour le Rétablissement</h1>
-        <p class="tagline">Vos directives anticipées en psychiatrie,<br>sécurisées et accessibles.</p>
-
-        <!-- Info démo -->
-        <div class="demo-info">
-            <strong>💡 Version de démonstration</strong><br>
-            Identifiants pré-remplis pour la visite guidée :<br>
-            Prénom : <span class="demo-creds">Émilie</span> &nbsp;|&nbsp; PIN : <span class="demo-creds">1 2 3
-                4</span><br><br>
-            La capsule vidéo du <strong>10 janvier 2026</strong> est déjà disponible dans cet espace.
-        </div>
-
-        <!-- Formulaire de connexion pré-rempli -->
-        <form class="login-form" id="loginForm" autocomplete="off">
-            <div class="form-group">
-                <label for="userName">Votre prénom ou surnom</label>
-                <input type="text" id="userName" value="Émilie" placeholder="Comment vous appelez-vous ?" maxlength="40"
-                    required autocomplete="off" />
-            </div>
-
-            <div class="form-group">
-                <label>Code PIN (4 chiffres)</label>
-                <div class="pin-input-row">
-                    <input type="tel" class="pin-digit pin-prefilled" id="pin1" maxlength="1" pattern="[0-9]"
-                        inputmode="numeric" autocomplete="off" value="1" readonly />
-                    <input type="tel" class="pin-digit pin-prefilled" id="pin2" maxlength="1" pattern="[0-9]"
-                        inputmode="numeric" autocomplete="off" value="2" readonly />
-                    <input type="tel" class="pin-digit pin-prefilled" id="pin3" maxlength="1" pattern="[0-9]"
-                        inputmode="numeric" autocomplete="off" value="3" readonly />
-                    <input type="tel" class="pin-digit pin-prefilled" id="pin4" maxlength="1" pattern="[0-9]"
-                        inputmode="numeric" autocomplete="off" value="4" readonly />
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                    <path
-                        d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4z" />
-                </svg>
-                Accéder à la démo
-            </button>
-        </form>
-
-        <p class="mt-24"
-            style="font-size:0.75rem;color:var(--gray-400);text-align:center;line-height:1.6;max-width:300px;">
-            🎬 Démo — la vidéo est chargée directement sans chiffrement.
-        </p>
-
-        <!-- Étape préalable DAP -->
-        <div class="info-box" style="margin-top: 24px; text-align: left; line-height: 1.5;">
-            <h3 style="font-size: 0.95rem; color: var(--primary-color); margin-bottom: 8px;">Étape préalable : Vos DAP à l'écrit</h3>
-            <p style="margin-bottom: 8px;">Avant d'enregistrer votre capsule, il est recommandé de rédiger vos Directives Anticipées en Psychiatrie. Vous pouvez utiliser le <a href="https://www.psycom.org/agir/la-defense-des-droits/kit-mon-gps/#telecharger-le-livret-mon-gps-697d5fd9e384f" target="_blank" rel="noopener" style="color:var(--primary-color);font-weight:600;text-decoration:underline;">Kit Mon GPS (Psycom)</a>.</p>
-            
-            <p style="margin-bottom: 4px; font-weight: 600; font-size: 0.8rem;">Livrets interactifs remplissables :</p>
-            <ul style="margin: 0; padding-left: 20px; font-size: 0.8rem;">
-                <li><strong>Adultes :</strong> <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_GPS_VF_INTERACTIF_2023.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Livret</a> | <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_PRISM_monGPS_NOTICE_Usagers.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Notice</a></li>
-                <li><strong>Ados / Jeunes :</strong> <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_GPS_ADOS_INTERACTIF_2023.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Livret</a> | <a href="https://www.psycom.org/wp-content/uploads/2024/04/PSYCOM_GPS_ADO-JEUNES-ADULTES_Notice_Jeunes_DEF.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Notice</a></li>
-            </ul>
-        </div>
-
-        <div style="text-align:center; margin-top: 20px;">
-            <a href="about.html" style="color:var(--gray-500); font-size: 0.9rem; text-decoration: underline;">À propos du projet</a>
-        </div>
+    <!-- Message de bienveillance -->
+    <div class="bienveillance-banner">
+      <div class="heart">💙</div>
+      <p>
+        Bienvenue. Ce moment vous appartient entièrement.<br><br>
+        Prendre soin de soi, c'est déjà un acte de courage.
+        Cette capsule, c'est votre voix qui guidera ceux qui vous aiment
+        dans les moments difficiles.<br><br>
+        <strong>Vous n'êtes pas seul(e).</strong>
+      </p>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <!-- Formulaire de connexion -->
+    <form class="login-form" id="loginForm" autocomplete="off">
+      <div class="form-group">
+        <label for="userName">Votre prénom ou surnom</label>
+        <input type="text" id="userName" placeholder="Comment vous appelez-vous ?" maxlength="40" required
+          autocomplete="off" />
+      </div>
 
-    <script type="module">
-        import { seedDemoData } from './js/app.js';
-        
-        document.getElementById('loginForm').addEventListener('submit', async e => {
-            e.preventDefault();
-            
-            // Initialiser les données de démo (Contacts, Historique)
-            try {
-                await seedDemoData();
-            } catch (err) {
-                console.error('Demo seed error:', err);
-            }
+      <div class="form-group">
+        <label>Code PIN (4 chiffres)</label>
+        <div class="pin-input-row">
+          <input type="tel" class="pin-digit" id="pin1" maxlength="1" pattern="[0-9]" inputmode="numeric"
+            autocomplete="off" />
+          <input type="tel" class="pin-digit" id="pin2" maxlength="1" pattern="[0-9]" inputmode="numeric"
+            autocomplete="off" />
+          <input type="tel" class="pin-digit" id="pin3" maxlength="1" pattern="[0-9]" inputmode="numeric"
+            autocomplete="off" />
+          <input type="tel" class="pin-digit" id="pin4" maxlength="1" pattern="[0-9]" inputmode="numeric"
+            autocomplete="off" />
+        </div>
+        <p class="mt-8" style="font-size:0.78rem;color:var(--gray-400);text-align:center;">
+          Ce PIN chiffre vos données localement. Ne l'oubliez pas.
+        </p>
+      </div>
 
-            // Stocker les infos démo en sessionStorage et rediriger
-            sessionStorage.setItem('capsule_user', JSON.stringify({ name: 'Émilie', pin: '1234', demo: true }));
-            window.location.href = 'dashboard-demo.html';
-        });
-    </script>
+      <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+          <path
+            d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4z" />
+        </svg>
+        Accéder à mon espace
+      </button>
+    </form>
+
+    <p class="mt-24" style="font-size:0.75rem;color:var(--gray-400);text-align:center;line-height:1.6;max-width:300px;">
+      🔒 Vos données ne quittent jamais cet appareil.<br>
+      Tout est chiffré localement avec votre PIN.
+    </p>
+
+    <!-- Étape préalable DAP -->
+    <div class="info-box" style="margin-top: 24px; text-align: left; line-height: 1.5;">
+      <h3 style="font-size: 0.95rem; color: var(--primary-color); margin-bottom: 8px;">Étape préalable&nbsp;: Vos DAP à l'écrit</h3>
+      <p style="margin-bottom: 8px;">Avant d'enregistrer votre capsule, il est recommandé de rédiger vos Directives Anticipées en Psychiatrie. Vous pouvez utiliser le <a href="https://www.psycom.org/agir/la-defense-des-droits/kit-mon-gps/#telecharger-le-livret-mon-gps-697d5fd9e384f" target="_blank" rel="noopener" style="color:var(--primary-color);font-weight:600;text-decoration:underline;">Kit Mon GPS (Psycom)</a>.</p>
+      
+      <p style="margin-bottom: 4px; font-weight: 600; font-size: 0.8rem;">Livrets interactifs remplissables&nbsp;:</p>
+      <ul style="margin: 0; padding-left: 20px; font-size: 0.8rem;">
+        <li><strong>Adultes :</strong> <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_GPS_VF_INTERACTIF_2023.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Livret</a> | <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_PRISM_monGPS_NOTICE_Usagers.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Notice</a></li>
+        <li><strong>Ados / Jeunes :</strong> <a href="https://www.psycom.org/wp-content/uploads/2023/11/PSYCOM_GPS_ADOS_INTERACTIF_2023.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Livret</a> | <a href="https://www.psycom.org/wp-content/uploads/2024/04/PSYCOM_GPS_ADO-JEUNES-ADULTES_Notice_Jeunes_DEF.pdf" target="_blank" rel="noopener" style="color:var(--primary-color);text-decoration:underline;">Notice</a></li>
+      </ul>
+    </div>
+
+    <!-- Bouton installation PWA -->
+    <button id="installBtn" class="btn-install" style="display:none;"
+      aria-label="Installer l'application sur votre téléphone">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+        <path
+          d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+        <path
+          d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+      </svg>
+      Installer l'application
+    </button>
+
+    <p id="installHint" class="install-hint" style="display:none; font-size:0.8rem; background:var(--blue-pale); color:var(--blue-dark); padding:12px; border-radius:12px; border:1px solid var(--blue-mid);">
+      📱 Pour installer l'application sur votre écran d'accueil :
+    </p>
+
+    <div style="text-align:center; margin-top: 20px;">
+        <a href="about.html" style="color:var(--gray-500); font-size: 0.9rem; text-decoration: underline;">À propos du projet</a>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+  import { setState, registerSW, showToast } from './js/app.js';
+
+  registerSW();
+
+  // ── Installation PWA ───────────────────────────────────────────────────────
+  let deferredPrompt = null;
+  const installBtn  = document.getElementById('installBtn');
+  const installHint = document.getElementById('installHint');
+
+  // Si déjà installée en standalone, ne rien afficher
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+
+  if (!isStandalone) {
+    // Android / Chrome : événement natif
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'flex';
+      installHint.style.display = 'block';
+    });
+
+    // iOS : pas d'événement natif → afficher un message guidé impérativement sur Safari
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+
+    if (isIOS) {
+      if (isSafari) {
+        installHint.innerHTML = `
+          <strong>📱 Installation sur iPhone/iPad :</strong><br>
+          1. Appuyez sur le bouton de partage <span style="font-size:1.2rem; vertical-align:middle;">⬆</span> en bas (ou haut) de Safari.<br>
+          2. Choisissez <strong>« Sur l'écran d'accueil »</strong>.
+        `;
+        installHint.style.display = 'block';
+      } else {
+        installHint.innerHTML = `
+          <strong>⚠️ Attention :</strong><br>
+          Pour installer cette application sur iPhone, vous devez <strong>impérativement utiliser Safari</strong> (le bouton d'installation est bloqué sur Chrome ou Facebook).
+        `;
+        installHint.style.display = 'block';
+      }
+    }
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        // Android/Chrome : déclencher la boîte de dialogue native
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+          installHint.style.display = 'none';
+          showToast('✅ Application installée avec succès !');
+        }
+        deferredPrompt = null;
+      } else {
+        // iOS : afficher les instructions
+        showToast('Sur iOS&nbsp;: appuyez sur  ⬆  puis «&nbsp;Sur l\'écran d\'accueil&nbsp;»', 5000);
+      }
+    });
+
+    // Masquer si l'utilisateur installe depuis ailleurs
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+      installHint.style.display = 'none';
+    });
+  }
+
+  // ── PIN auto-advance ───────────────────────────────────────────────────────
+  const pins = document.querySelectorAll('.pin-digit');
+  pins.forEach((input, i) => {
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '');
+      if (input.value && i < pins.length - 1) pins[i + 1].focus();
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !input.value && i > 0) pins[i - 1].focus();
+    });
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('userName').value.trim();
+    const pin  = Array.from(pins).map(p => p.value).join('');
+
+    if (!name) { showToast('Veuillez entrer votre prénom.'); return; }
+    if (pin.length !== 4) { showToast('Veuillez entrer votre code PIN à 4 chiffres.'); return; }
+
+    setState({ name, pin });
+    window.location.href = 'dashboard.html';
+  });
+  </script>
 </body>
 
 </html>
