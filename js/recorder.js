@@ -251,11 +251,17 @@ export class GuidedRecorder {
     _showCurrentPrompt() {
         const phase = PHASES[this.phaseIndex];
         if (!phase) return;
-        const state = getState();
-        const now = new Date().toLocaleDateString('fr-FR');
-        let text = phase.prompts[this.promptIndex]
-            .replace('{name}', state.name || '…')
-            .replace('{date}', now);
+        let text = "";
+        if (phase.prompts && phase.prompts.length > 0) {
+            const state = getState();
+            const now = new Date().toLocaleDateString('fr-FR');
+            const rawText = phase.prompts[this.promptIndex];
+            if (rawText) {
+                text = rawText
+                    .replace('{name}', state.name || '…')
+                    .replace('{date}', now);
+            }
+        }
 
         if (this.overlayPhase) this.overlayPhase.textContent = phase.label;
         if (this.overlayText) this.overlayText.textContent = text;
