@@ -485,9 +485,9 @@ export async function seedDemoData() {
         { type: 'access_add', date: '2026-01-10T09:05:00Z', details: { contactName: 'Frank PARLER', role: 'confiance' }, userId: 'Émilie' },
         { type: 'record', date: '2026-01-10T11:30:00Z', details: { capsuleNumber: 2, duration: 184 }, userId: 'Émilie' },
         { type: 'access_add', date: '2026-01-12T14:35:00Z', details: { contactName: 'Eva VEILLER', role: 'famille' }, userId: 'Émilie' },
-        { type: 'delete', date: '2026-01-25T10:00:00Z', details: { capsuleNumber: 2 }, userId: 'Émilie' },
+        { type: 'delete', date: '2026-01-09T10:00:00Z', details: { capsuleNumber: 1 }, userId: 'Émilie' },
         { type: 'access_add', date: '2026-02-05T11:20:00Z', details: { contactName: 'Sam SOUCI', role: 'soignant' }, userId: 'Émilie' },
-        { type: 'record', date: '2026-02-10T09:00:00Z', details: { capsuleNumber: 3, duration: 210 }, userId: 'Émilie' }
+        { type: 'record', date: '2026-03-24T09:00:00Z', details: { capsuleNumber: 3, duration: 210 }, userId: 'Émilie' }
     ];
 
     for (const h of history) {
