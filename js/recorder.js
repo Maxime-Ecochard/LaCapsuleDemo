@@ -23,25 +23,25 @@ const PHASES = [
     },
     {
         id: 'pathologie',
-        label: '🧠 Signes d\'alertes, Repères, Souhaits, Ressources',
+        label: '🧠 Signes d\'alertes, Repères, Besoins, Recommandations, Ressources',
 
-        prompts: [/*
+        prompts: [
             'Quand je vais moins bien, mes signes d\'alerte sont…',
             'Ce qui m\'aide à garder l\'équilibre et mes repères sont…',
-            'En cas de difficulté ou de crise, mes souhaits sont…',
-            'Mes ressources et personnes ressources sont…',*/
+            'En cas de difficulté ou de crise, mes besoins et recommandations sont…',
+            'Mes ressources et personnes ressources sont…',
         ],
         duration: 60
     },
     {
         id: 'directives',
-        label: '📋 Mes Directives de Soins',
+        label: '📋 Mes Directives de Soins (DAP)',
 
-        prompts: [/*
-            'En cas de crise, je souhaite que l\'on…',
+        prompts: [
+            'En cas de crise, mes besoins et recommandations sont que l\'on…',
             'Je refuse expressément…',
             'Mon traitement habituel est…',
-            'Ma personne de confiance est…',*/
+            'Ma personne de confiance est…',
         ],
         duration: 90
     },
@@ -70,6 +70,7 @@ export class GuidedRecorder {
         this.promptList = opts.promptList;     // NodeList of .prompt-list li
         this.timerEl = opts.timerEl;        // timer display element
         this.recDot = opts.recDot;         // blinking dot element
+        this.audioMeterBars = opts.audioMeterBars; // NodeList of meter bars
         this.onSaved = opts.onSaved || (() => { });
 
         this.stream = null;
@@ -82,6 +83,12 @@ export class GuidedRecorder {
         this.elapsedSec = 0;
         this._timerInterval = null;
         this._promptInterval = null;
+        
+        // Audio Meter properties
+        this.audioContext = null;
+        this.analyser = null;
+        this.dataArray = null;
+        this.meterRAF = null;
     }
 
     // Initialize camera stream
@@ -94,6 +101,19 @@ export class GuidedRecorder {
             this.videoEl.srcObject = this.stream;
             this.videoEl.muted = true;
             await this.videoEl.play();
+            
+            // Setup Audio Meter
+            if (this.audioMeterBars && this.audioMeterBars.length > 0) {
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    const source = this.audioContext.createMediaStreamSource(this.stream);
+                    source.connect(this.analyser);
+                    this.analyser.fftSize = 256;
+                    this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                } catch (e) { console.warn('AudioContext not supported', e); }
+            }
+            
             return true;
         } catch (err) {
             console.error('Camera error:', err);
@@ -130,6 +150,7 @@ export class GuidedRecorder {
             this._startTimer();
             this._startPrompts();
             this._updatePhaseUI();
+            this._startAudioMeter();
         } catch (e) {
             console.error("Erreur critique au lancement de l'enregistrement", e);
             // On veut quand même que l'interface considère que ça a marché visuellement pour ne pas bloquer
@@ -137,6 +158,7 @@ export class GuidedRecorder {
             this._startTimer();
             this._startPrompts();
             this._updatePhaseUI();
+            this._startAudioMeter();
         }
     }
 
@@ -146,6 +168,7 @@ export class GuidedRecorder {
 
         this._stopTimer();
         this._stopPrompts();
+        this._stopAudioMeter();
         this.isRecording = false;
         if (this.recDot) this.recDot.classList.remove('recording');
 
@@ -188,6 +211,7 @@ export class GuidedRecorder {
             this.mediaRecorder.pause();
             this._stopTimer();
             this._stopPrompts();
+            this._stopAudioMeter();
             if (this.recDot) this.recDot.classList.remove('recording');
         }
     }
@@ -197,6 +221,7 @@ export class GuidedRecorder {
             this.mediaRecorder.resume();
             this._startTimer();
             this._startPrompts();
+            this._startAudioMeter();
             if (this.recDot) this.recDot.classList.add('recording');
         }
     }
@@ -205,6 +230,12 @@ export class GuidedRecorder {
     destroy() {
         this._stopTimer();
         this._stopPrompts();
+        this._stopAudioMeter();
+        
+        if (this.audioContext && this.audioContext.state !== 'closed') {
+            this.audioContext.close();
+        }
+        
         if (this.stream) {
             this.stream.getTracks().forEach(t => t.stop());
             this.stream = null;
@@ -212,6 +243,58 @@ export class GuidedRecorder {
     }
 
     // ── Private ────────────────────────────────────────────────────────────
+
+    _startAudioMeter() {
+        if (!this.analyser || !this.audioMeterBars) return;
+        const barCount = this.audioMeterBars.length;
+        
+        const drawMeter = () => {
+            this.meterRAF = requestAnimationFrame(drawMeter);
+            this.analyser.getByteFrequencyData(this.dataArray);
+            
+            // On divise les fréquences en barCount groupes
+            const step = Math.floor(this.dataArray.length / barCount);
+            
+            for (let i = 0; i < barCount; i++) {
+                // On prend la valeur max ou moyenne du segment de fréquence
+                let val = 0;
+                for (let j = 0; j < step; j++) {
+                    val += this.dataArray[i * step + j];
+                }
+                val = val / step;
+
+                // On applique un boost sur les fréquences de la voix (les premières barres)
+                // et on calme un peu les bruits de fond
+                // On applique un boost sur les fréquences de la voix
+                let height = 4;
+                if (val > 5) {
+                    // Mapping plus sensible : 5-150 vers 4-24px
+                    height = 4 + (Math.min(val, 150) / 150) * 20;
+                }
+                
+                const bar = this.audioMeterBars[i];
+                if (bar) {
+                    bar.style.height = `${height}px`;
+                    if (val > 15) {
+                        bar.classList.add('active');
+                    } else {
+                        bar.classList.remove('active');
+                    }
+                }
+            }
+        };
+        drawMeter();
+    }
+
+    _stopAudioMeter() {
+        if (this.meterRAF) {
+            cancelAnimationFrame(this.meterRAF);
+            this.meterRAF = null;
+        }
+        if (this.audioMeterBars) {
+            this.audioMeterBars.forEach(bar => bar.className = 'meter-bar');
+        }
+    }
 
     _startTimer() {
         this._timerInterval = setInterval(() => {

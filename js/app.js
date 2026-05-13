@@ -24,10 +24,52 @@ export function clearState() {
 export function requireAuth() {
     const state = getState();
     if (!state.name || !state.pin) {
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
         return false;
     }
     return true;
+}
+
+// ── Security Auto-Lock ─────────────────────────────────────────────────────
+
+/**
+ * Verrouille l'application immédiatement si elle est mise en arrière-plan.
+ * On utilise sessionStorage, donc l'onglet garde les données tant qu'il est ouvert,
+ * SAUF si on force le nettoyage lors de la mise en pause.
+ */
+if (typeof window !== 'undefined') {
+    // Gestion du cycle de vie pour la sécurité (Auto-Lock avec délai de grâce)
+    const LOCK_GRACE_PERIOD = 60 * 1000; // 60 secondes de grâce
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            // On enregistre le moment où l'app passe en arrière-plan
+            sessionStorage.setItem('last_hidden_time', Date.now().toString());
+        } else if (document.visibilityState === 'visible') {
+            const lastHidden = sessionStorage.getItem('last_hidden_time');
+            if (lastHidden) {
+                const elapsed = Date.now() - parseInt(lastHidden, 10);
+                sessionStorage.removeItem('last_hidden_time');
+
+                // Si l'app est restée cachée plus que le délai de grâce, on verrouille
+                if (elapsed > LOCK_GRACE_PERIOD) {
+                    clearState();
+                    window.location.replace('index.html');
+                }
+            }
+        }
+    });
+
+    // Protection contre le BFcache (bouton retour sur mobile)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            // La page est chargée depuis le cache (bouton retour)
+            // On force une vérification d'auth
+            if (!getState().name || !getState().pin) {
+                window.location.replace('index.html');
+            }
+        }
+    });
 }
 
 // ── Navigation ─────────────────────────────────────────────────────────────
@@ -54,12 +96,13 @@ export function showToast(message, duration = 2800) {
 // ── IndexedDB ──────────────────────────────────────────────────────────────
 
 const DB_NAME = 'CapsuleVideoDB';
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 const STORE_CAPS = 'capsules';
 const STORE_ACC = 'access';
 const STORE_HIST = 'history';
 const STORE_META = 'meta';
 const STORE_PROFILES = 'profiles';
+const STORE_SCRIPTS = 'scripts';
 
 function openDB() {
     return new Promise((resolve, reject) => {
@@ -121,6 +164,13 @@ function openDB() {
                     db.createObjectStore(STORE_PROFILES, { keyPath: 'userId' });
                 }
             }
+
+            // v6 migration : Scripts DAP structurés (Téléprompter)
+            if (e.oldVersion < 6) {
+                if (!db.objectStoreNames.contains(STORE_SCRIPTS)) {
+                    db.createObjectStore(STORE_SCRIPTS, { keyPath: 'userId' });
+                }
+            }
         };
         req.onsuccess = e => resolve(e.target.result);
         req.onerror = e => reject(e.target.error);
@@ -157,7 +207,7 @@ export async function getCapsules(userId, includeTrashed = false) {
     const db = await openDB();
     // On nettoie au passage
     cleanupCapsules().catch(e => console.warn(e));
-    
+
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_CAPS, 'readonly');
         const store = tx.objectStore(STORE_CAPS);
@@ -272,7 +322,7 @@ export async function cleanupCapsules() {
             tx.oncomplete = resolve;
             tx.onerror = e => reject(e.target.error);
         });
-    } catch(e) {
+    } catch (e) {
         console.warn('Cleanup error:', e);
     }
 }
@@ -432,6 +482,42 @@ export async function saveUserProfile(profileData) {
     });
 }
 
+// ── Script DAP (Téléprompter) ───────────────────────────────────────────────
+
+/**
+ * Sauvegarde le script DAP structuré de l'utilisateur connecté.
+ * @param {Object} scriptData - { section1, section2, section3, section4 }
+ */
+export async function saveScript(scriptData) {
+    const db = await openDB();
+    const state = getState();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_SCRIPTS, 'readwrite');
+        tx.objectStore(STORE_SCRIPTS).put({
+            ...scriptData,
+            userId: scriptData.userId || state.name || '',
+            updatedAt: scriptData.updatedAt || new Date().toISOString()
+        });
+        tx.oncomplete = resolve;
+        tx.onerror = e => reject(e.target.error);
+    });
+}
+
+/**
+ * Récupère le script DAP de l'utilisateur connecté.
+ * @returns {Object|null} - { section1, section2, section3, section4, updatedAt } ou null
+ */
+export async function getScript() {
+    const db = await openDB();
+    const state = getState();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_SCRIPTS, 'readonly');
+        const req = tx.objectStore(STORE_SCRIPTS).get(state.name || '');
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = e => reject(e.target.error);
+    });
+}
+
 // ── Service Worker registration ────────────────────────────────────────────
 
 export function registerSW() {
@@ -448,16 +534,24 @@ export async function seedDemoData() {
     const db = await openDB();
 
     // Vérifier si des données existent déjà pour l'utilisateur de démo
-    const tx = db.transaction(STORE_HIST, 'readonly');
-    const store = tx.objectStore(STORE_HIST);
-    const index = store.index('userId');
-    const req = index.getAll('Émilie');
+    const histTx = db.transaction(STORE_HIST, 'readonly');
+    const histStore = histTx.objectStore(STORE_HIST);
+    const histIndex = histStore.index('userId');
+    const histReq = histIndex.getAll('Émilie');
 
-    const existing = await new Promise(r => {
-        req.onsuccess = () => r(req.result);
+    const existingHist = await new Promise(r => {
+        histReq.onsuccess = () => r(histReq.result);
     });
 
-    if (existing && existing.length > 0) return;
+    const scriptTx = db.transaction(STORE_SCRIPTS, 'readonly');
+    const scriptStore = scriptTx.objectStore(STORE_SCRIPTS);
+    const scriptReq = scriptStore.get('Émilie');
+    const existingScript = await new Promise(r => {
+        scriptReq.onsuccess = () => r(scriptReq.result);
+    });
+
+    // Si tout existe déjà, on ne fait rien
+    if (existingHist && existingHist.length > 0 && existingScript) return;
 
     // 0. Ajouter le profil fictif pour Émilie
     await saveUserProfile({
@@ -494,7 +588,17 @@ export async function seedDemoData() {
         await addHistoryEntry(h);
     }
 
-    // 3. Initialiser le compteur de capsules à 3 (la prochaine sera la 4)
+    // 3. Ajouter un script pré-rempli pour le téléprompter de la démo
+    await saveScript({
+        userId: 'Émilie',
+        section1: "Bonjour, nous sommes le 10 janvier 2026 et c'est la troisième capsule vidéo pour le rétablissement que je fais. Je m'appelle Émilie André. Je suis atteinte d'un trouble bipolaire de type 1 et je suis plutôt sujette à faire des phases up de décompensation maniaque. Depuis 2019, je n'ai pas fait de crise et je suis stabilisée.",
+        section2: "Je fais cette vidéo pour énoncer mes directives anticipées en psychiatrie et me soutenir en cas de crise tout d'abord, vu que je travaille et collabore avec le Bon Sauveur, il n'est pas possible pour moi d'être hospitalisé dans cette structure sur Albi. Du coup, il me faudrait que je sois transféré dans une clinique ou un hôpital sur Toulouse. En temps normal, je prends très peu de traitement, je suis sous 7 mg d'albinify ou aripiprazole plus une pilule contraceptive optimizette en continu.",
+        section3: "S'il vous plaît si je suis dans un état vraiment altéré de conscience, merci de ne pas m'enlever mes bijoux, je les porte tout le temps. Et je ne les enlève pas, je ne me ferai pas de mal, je vous je vous rassure. Merci de ne pas me mettre en contention et si possible pas en isolement non plus, expliquez-moi ce qui m'arrive et permettez-moi de visionner cette capsule vidéo pour le rétablissement. Si je suis hospitalisé, je souhaite être dans une chambre individuelle avoir accès à de la musique, à mon téléphone du coup. Que je puisse faire des créations artistiques, de la lecture, du sport très importante et des ateliers thérapeutiques. Attention à la nourriture. Le matin, je déjeune simplement avec un café et je sais par expérience que j'ai tendance à vraiment prendre du poids en hospitalisation. Donc merci de de m'aider à ne pas prendre de poids. Je ne suis pas fumeuse de tabac si vraiment je ressens le besoin de fumer et ben merci de me procurer une cigarette électronique sans nicotine. Pour ce qui est de ma maison merci de s'occuper des plantes et de les arroser et de vider le frigo des denrées qui sont périssables, de m'apporter des habits nécessaires et un nécessaire de toilette.",
+        section4: "Émilie, il faut vraiment que tu te reposes que tu calmes le mental. Essaie de demander à ton entourage familial amical et ainsi qu'aux soignants de t'aider à y voir clair dans tes idées délirantes. Je suis une femme forte ce que je vis là, c'est n'est qu'un passage ce trouble bipolaire ne me définit pas, c'est quelque chose qui fait partie de moi mais qui correspond pas à mon identité, je vais m'en sortir. Prend de grande respiration, essaie de faire de la cohérence cardiaque comme tu le dis tout le temps, la temporalité est ton allié, rien n'est permanent. Courage, force et espoir. Et n'oublie pas que tu es très bien entouré et que tu es aimé.",
+        updatedAt: '2026-01-10T11:00:00Z'
+    });
+
+    // 4. Initialiser le compteur de capsules à 3 (la prochaine sera la 4)
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_META, 'readwrite');
         tx.objectStore(STORE_META).put({ key: 'capsuleCounter', value: 3 });
